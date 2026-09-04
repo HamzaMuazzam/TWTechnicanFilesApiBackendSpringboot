@@ -1,0 +1,11 @@
+.git
+.gradle
+.idea
+build
+deploy
+data
+app.log*
+*.gz
+.DS_Store
+_to_delete
+install.sh

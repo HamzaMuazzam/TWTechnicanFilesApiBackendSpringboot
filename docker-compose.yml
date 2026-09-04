@@ -1,0 +1,21 @@
+services:
+  app:
+    build: .
+    image: tw-technician-files-api:latest
+    container_name: tw-technician-files-api
+    # Comes back after a crash and after a host reboot (Docker daemon must start on boot - install.sh enables it).
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:8088:8088"
+    volumes:
+      # Uploaded files and logs live outside the container so they survive rebuilds.
+      - ./data/files:/app/src/main/resources/static/files
+      - ./data/logs:/app/logs
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx1024m
+      - TZ=Asia/Karachi
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"

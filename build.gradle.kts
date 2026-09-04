@@ -57,3 +57,8 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+// Fixed jar name so the Windows service / Dockerfile never need updating on version bumps.
+tasks.bootJar {
+    archiveFileName.set("app.jar")
+}
