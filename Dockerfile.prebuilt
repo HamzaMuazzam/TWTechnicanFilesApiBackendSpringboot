@@ -1,0 +1,10 @@
+# Runtime-only image: uses build/libs/app.jar built on the host (install.sh falls back to this
+# when the Docker build network cannot reach Gradle/Maven Central).
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+RUN mkdir -p /app/src/main/resources/static/files /app/logs
+COPY build/libs/app.jar /app/app.jar
+ENV JAVA_OPTS="-Xms256m -Xmx1024m" \
+    LOGGING_FILE_NAME=/app/logs/app.log
+EXPOSE 8088
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -Dfile.encoding=UTF-8 -jar /app/app.jar"]

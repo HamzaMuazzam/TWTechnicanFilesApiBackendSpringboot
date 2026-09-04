@@ -155,7 +155,33 @@ if docker ps --format '{{.Names}}' | grep -qx "$CONTAINER"; then
 else
   step "Building image and starting '$CONTAINER'"
 fi
-docker compose build "$APP" || die "image build failed"
+export DOCKERFILE=Dockerfile
+if ! docker compose build "$APP"; then
+  warn "in-Docker build failed (usually: build container has no internet). Falling back to building the jar on this machine..."
+  JAVA_OK=0
+  for cand in "${JAVA_HOME:-}" /usr/lib/jvm/*17* /usr/lib/jvm/*21* "$(/usr/libexec/java_home -v 17 2>/dev/null || true)" ""; do
+    if [[ -n "$cand" && -x "$cand/bin/java" ]]; then export JAVA_HOME="$cand"; export PATH="$JAVA_HOME/bin:$PATH"; JAVA_OK=1; break; fi
+  done
+  if [[ $JAVA_OK -eq 0 ]] && command -v java >/dev/null; then JAVA_OK=1; fi
+  if [[ $JAVA_OK -eq 0 ]]; then
+    if [[ "$OS" != "Darwin" ]]; then
+      warn "no JDK on host - installing openjdk-17"
+      ($SUDO apt-get update -qq && $SUDO apt-get install -y -qq openjdk-17-jdk-headless) >/dev/null 2>&1 \
+        || $SUDO yum install -y java-17-openjdk-devel >/dev/null 2>&1 || die "could not install a JDK; install JDK 17 and re-run"
+      JAVA_OK=1
+    else
+      die "no JDK 17 on this Mac: brew install openjdk@17 and re-run"
+    fi
+  fi
+  JMAJ="$(java -version 2>&1 | head -1 | sed -E 's/.*"([0-9]+).*/\1/')"
+  (( JMAJ >= 17 && JMAJ <= 24 )) || die "host Java $JMAJ cannot run Gradle 8.14 (needs 17-24); set JAVA_HOME to a JDK 17"
+  info "building with host JDK $(java -version 2>&1 | head -1)"
+  chmod +x gradlew
+  ./gradlew --no-daemon clean bootJar -x test || die "host build failed too - check internet/proxy on this server"
+  ok "jar built on host: build/libs/app.jar"
+  export DOCKERFILE=Dockerfile.prebuilt
+  docker compose build "$APP" || die "image build failed"
+fi
 docker compose up -d --no-deps --force-recreate "$APP" || die "container failed to start"
 
 # ---------- 6. Health ----------

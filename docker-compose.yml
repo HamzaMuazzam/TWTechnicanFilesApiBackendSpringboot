@@ -1,6 +1,14 @@
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile}
+      # host network so the build can use the server's DNS/proxy (fixes "Connection refused" downloads)
+      network: host
+      args:
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
+        NO_PROXY: ${NO_PROXY:-}
     image: tw-technician-files-api:latest
     container_name: tw-technician-files-api
     # Comes back after a crash and after a host reboot (Docker daemon must start on boot - install.sh enables it).

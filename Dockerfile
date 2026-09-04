@@ -1,11 +1,10 @@
-# ---- build stage ----
-FROM eclipse-temurin:17-jdk AS build
+# ---- build stage (Gradle preinstalled: no wrapper download) ----
+FROM gradle:8.14-jdk17 AS build
 WORKDIR /src
-COPY gradlew build.gradle.kts settings.gradle.kts ./
-COPY gradle ./gradle
-RUN chmod +x gradlew && ./gradlew --no-daemon dependencies > /dev/null 2>&1 || true
+COPY build.gradle.kts settings.gradle.kts ./
+RUN gradle --no-daemon dependencies > /dev/null 2>&1 || true
 COPY src ./src
-RUN ./gradlew --no-daemon clean bootJar -x test
+RUN gradle --no-daemon clean bootJar -x test
 
 # ---- runtime stage ----
 FROM eclipse-temurin:17-jre

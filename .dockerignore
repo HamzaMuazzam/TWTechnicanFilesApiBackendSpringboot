@@ -1,7 +1,8 @@
 .git
 .gradle
 .idea
-build
+build/*
+!build/libs/app.jar
 deploy
 data
 app.log*
