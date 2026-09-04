@@ -31,8 +31,9 @@ public class FileUploaderService {
         if (!FileUtils.fileExists(fileName)) {
             throw new BadRequestException("FILE_NOT_FOUND");
         }
-
-        return ResponseWrapper.success(buildPublicPath(FileUtils.getPublicFilePath(fileName)));
+        String publicFilePath = FileUtils.getPublicFilePath(fileName);
+        String s = buildPublicPath(publicFilePath);
+        return ResponseWrapper.success(s);
     }
 
     private String buildPublicPath(String relativeFilePath) {
