@@ -7,7 +7,7 @@
 #    ./install.sh stop     stop the container
 #
 #  What it does: installs Docker if missing -> makes Docker start on boot ->
-#  removes old launchd/systemd services -> frees port 8088 -> opens the port
+#  removes old launchd/systemd services -> frees port 8089 -> opens the port
 #  in the firewall -> builds the image -> (re)starts ONLY the app container
 #  (restart: unless-stopped => survives reboot) -> follows colored logs.
 #  Ctrl+C leaves the logs only; the app keeps running.
@@ -17,7 +17,7 @@ cd "$(dirname "$0")"
 
 APP=app                                  # compose service name
 CONTAINER=tw-technician-files-api
-PORT=8088
+PORT=8089
 OS="$(uname -s)"
 
 # ---------- colors ----------
