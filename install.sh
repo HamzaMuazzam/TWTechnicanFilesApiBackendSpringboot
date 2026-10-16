@@ -279,7 +279,12 @@ ENV
 else
   ok ".env present"
 fi
-[[ -f config/firebase-service-account.json ]] || warn "config/firebase-service-account.json missing - push notifications stay in dev (logging) mode until FIREBASE_ENABLED=true and the file exists"
+if [[ "${FIREBASE_ENABLED:-false}" == "true" && ! -s config/firebase-service-account.json ]]; then
+  die "FIREBASE_ENABLED=true in .env but config/firebase-service-account.json is missing on this machine.
+  Copy it here (Firebase console -> Project settings -> Service accounts -> Generate new private key),
+  or set FIREBASE_ENABLED=false in .env to run without real pushes."
+fi
+[[ -s config/firebase-service-account.json ]] || warn "config/firebase-service-account.json missing - push notifications stay in dev (logging) mode until FIREBASE_ENABLED=true and the file exists"
 
 # ---------- 6. Build + (re)start the containers ----------
 mkdir -p data/files data/logs data/pg config
