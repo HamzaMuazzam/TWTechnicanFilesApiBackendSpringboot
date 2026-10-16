@@ -1,0 +1,89 @@
+### TW Notification - sample requests (VS Code REST Client / IntelliJ HTTP client)
+@host = http://localhost:8089
+# No API key needed while AUTH_ENABLED=false.
+
+### 1) Push configurations (who receives what). Upserts by S3's ID. AlertType "*" or omitted = all types.
+POST {{host}}/api/v1/ingest/configurations
+Content-Type: application/json
+
+[
+  { "ID": "C-1", "PhoneNumber": "03001234567", "UID": "111", "AlertType": "*",         "DBDT": "2026-10-14T09:00:00+05:00", "CrtBY": "s3" },
+  { "ID": "C-2", "PhoneNumber": "03211234567", "UID": "111", "AlertType": "OVERSPEED", "DBDT": "2026-10-14T09:00:00+05:00", "CrtBY": "s3" }
+]
+
+### List configurations for a uid
+GET {{host}}/api/v1/ingest/configurations?uid=111
+
+### Delete a configuration (S3 id or our numeric id)
+DELETE {{host}}/api/v1/ingest/configurations/C-2
+
+### 2) Push alerts. Recipients come from the configurations (uid + alert type).
+POST {{host}}/api/v1/ingest/alerts
+Content-Type: application/json
+
+[
+  { "ID": "A-1", "UID": "111", "AlertType": "OVERSPEED", "Message": "Vehicle ABC-123 exceeded 120 km/h",
+    "Lat": 24.8607, "Lon": 67.0011, "DBDT": "2026-10-14T09:05:00+05:00" },
+  { "ID": "A-2", "UID": "111", "AlertType": "SOS", "Message": "SOS pressed", "Lat": 24.86, "Lon": 67.0 }
+]
+
+### Dev login (needs AUTH_DEV_LOGIN_ENABLED=true / dev profile)
+# @name devLogin
+POST {{host}}/api/v1/app/auth/dev-login
+Content-Type: application/json
+
+{ "phone": "03001234567",
+  "device": { "deviceId": "dev-device-1", "fcmToken": "fake-token", "manufacturer": "Xiaomi",
+              "model": "Redmi Note 12", "osVersion": "14", "appVersion": "1.0.0" } }
+
+### Inbox
+GET {{host}}/api/v1/app/notifications?size=30&unreadOnly=false
+Authorization: Bearer {{devLogin.response.body.data.accessToken}}
+
+### Ack (device received the push)
+POST {{host}}/api/v1/app/notifications/ack
+Content-Type: application/json
+Authorization: Bearer {{devLogin.response.body.data.accessToken}}
+
+{ "deviceId": "dev-device-1", "items": [ { "notificationId": 1, "receivedAt": "2026-10-05T05:14:00Z" } ] }
+
+### Mark read
+POST {{host}}/api/v1/app/notifications/read
+Content-Type: application/json
+Authorization: Bearer {{devLogin.response.body.data.accessToken}}
+
+{ "ids": [1] }
+
+### Admin login
+# @name adminLogin
+POST {{host}}/api/v1/admin/auth/login
+Content-Type: application/json
+
+{ "username": "admin", "password": "ChangeMe123!" }
+
+### Overview (last 30 days by default)
+GET {{host}}/api/v1/admin/overview
+Authorization: Bearer {{adminLogin.response.body.data.accessToken}}
+
+### Generic query with nested filter
+POST {{host}}/api/v1/admin/query/notifications
+Content-Type: application/json
+Authorization: Bearer {{adminLogin.response.body.data.accessToken}}
+
+{ "filters": [ { "field": "user.phoneE164", "op": "contains", "value": "3001234" },
+               { "field": "status", "op": "in", "value": ["SENT", "DELIVERED"] } ],
+  "logic": "AND", "sort": [ { "field": "id", "dir": "desc" } ], "page": 0, "size": 50 }
+
+### CSV export
+POST {{host}}/api/v1/admin/export/alerts
+Content-Type: application/json
+Authorization: Bearer {{adminLogin.response.body.data.accessToken}}
+
+{ "filters": [ { "field": "sdt", "op": "between", "value": ["2026-10-01", "2026-10-31"] } ] }
+
+### SQL console (ADMIN only, read-only)
+POST {{host}}/api/v1/admin/sql
+Content-Type: application/json
+Authorization: Bearer {{adminLogin.response.body.data.accessToken}}
+
+{ "sql": "select status, count(*) from notification group by status" }

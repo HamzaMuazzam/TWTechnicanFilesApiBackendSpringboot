@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    show-sql: true
+
+auth:
+  dev-login-enabled: true
+
+firebase:
+  enabled: false
+
+logging:
+  level:
+    com.trackingworld.tw: DEBUG
+    org.springframework.security: INFO

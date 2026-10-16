@@ -42,3 +42,5 @@ app.log
 # docker volumes
 data/
 _to_delete/
+config/*.json
+.env

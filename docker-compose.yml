@@ -1,4 +1,48 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tw-notification-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tw_notification}
+      POSTGRES_USER: ${POSTGRES_USER:-tw}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tw_notification_change_me}
+      TZ: Asia/Karachi
+    ports:
+      # Host access for pgAdmin / psql: localhost:6033 (6033 avoids clashing with a Postgres installed on the host).
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-6033}:5432"
+    volumes:
+      - ./data/pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tw} -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # One-shot: guarantees the database and app role exist on every start (also on an already-initialised ./data/pg).
+  db-init:
+    image: postgres:16-alpine
+    container_name: tw-notification-db-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-tw_notification}
+      POSTGRES_USER: ${POSTGRES_USER:-tw}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tw_notification_change_me}
+      APP_DB_USER: ${APP_DB_USER:-${POSTGRES_USER:-tw}}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:-${POSTGRES_PASSWORD:-tw_notification_change_me}}
+    volumes:
+      - ./deploy/db-init.sh:/db-init.sh:ro
+    entrypoint: ["sh", "/db-init.sh"]
+    restart: "no"
+
   app:
     build:
       context: .
@@ -9,19 +53,38 @@ services:
         HTTP_PROXY: ${HTTP_PROXY:-}
         HTTPS_PROXY: ${HTTPS_PROXY:-}
         NO_PROXY: ${NO_PROXY:-}
-    image: tw-technician-files-api:latest
-    container_name: tw-technician-files-api
+    image: tw-notification-api:latest
+    container_name: tw-notification-api
     # Comes back after a crash and after a host reboot (Docker daemon must start on boot - install.sh enables it).
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
     ports:
       - "0.0.0.0:8089:8089"
     volumes:
       # Uploaded files and logs live outside the container so they survive rebuilds.
       - ./data/files:/app/src/main/resources/static/files
       - ./data/logs:/app/logs
+      # Put firebase-service-account.json in ./config (read-only inside the container).
+      - ./config:/app/config:ro
     environment:
       - JAVA_OPTS=-Xms256m -Xmx1024m
       - TZ=Asia/Karachi
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-tw_notification}
+      - SPRING_DATASOURCE_USERNAME=${APP_DB_USER:-${POSTGRES_USER:-tw}}
+      - SPRING_DATASOURCE_PASSWORD=${APP_DB_PASSWORD:-${POSTGRES_PASSWORD:-tw_notification_change_me}}
+      - AUTH_ENABLED=${AUTH_ENABLED:-false}
+      - JWT_SECRET=${JWT_SECRET:-change-me-change-me-change-me-32chars}
+      - FIREBASE_ENABLED=${FIREBASE_ENABLED:-false}
+      - FIREBASE_CREDENTIALS_PATH=/app/config/firebase-service-account.json
+      - AUTH_DEV_LOGIN_ENABLED=${AUTH_DEV_LOGIN_ENABLED:-false}
+      - ADMIN_INITIAL_PASSWORD=${ADMIN_INITIAL_PASSWORD:-ChangeMe123!}
+      - INGEST_INITIAL_API_KEY=${INGEST_INITIAL_API_KEY:-}
+      - APP_TIMEZONE=${APP_TIMEZONE:-Asia/Karachi}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-*}
     logging:
       driver: json-file
       options:

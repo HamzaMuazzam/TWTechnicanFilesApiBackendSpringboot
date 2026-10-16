@@ -5,8 +5,11 @@ build/*
 !build/libs/app.jar
 deploy
 data
+config
 app.log*
 *.gz
 .DS_Store
 _to_delete
 install.sh
+frontend/node_modules
+frontend/dist

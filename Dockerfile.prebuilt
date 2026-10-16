@@ -2,7 +2,7 @@
 # when the Docker build network cannot reach Gradle/Maven Central).
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-RUN mkdir -p /app/src/main/resources/static/files /app/logs
+RUN mkdir -p /app/src/main/resources/static/files /app/logs /app/config
 COPY build/libs/app.jar /app/app.jar
 ENV JAVA_OPTS="-Xms256m -Xmx1024m" \
     LOGGING_FILE_NAME=/app/logs/app.log

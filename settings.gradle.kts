@@ -1,6 +1,12 @@
 pluginManagement {
-    plugins {
-        kotlin("jvm") version "1.9.23"
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
     }
 }
-rootProject.name = "TWTechnicanFilesApiBackendSpringboot"
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
+rootProject.name = "TWNotificationBackend"

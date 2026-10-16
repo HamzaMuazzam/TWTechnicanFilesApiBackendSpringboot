@@ -1,0 +1,12 @@
+package com.trackingworld.tw.admin.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+public record AdminCreateRequest(
+        @NotBlank @Size(min = 3, max = 50) @Pattern(regexp = "[A-Za-z0-9_.\\-@]+") String username,
+        @NotBlank @Size(min = 8, max = 200) String password,
+        @NotBlank @Pattern(regexp = "ADMIN|VIEWER") String role
+) {
+}
