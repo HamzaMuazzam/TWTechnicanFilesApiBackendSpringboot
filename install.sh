@@ -318,6 +318,19 @@ if ! docker compose build "$APP"; then
 fi
 docker compose up -d "$DB" || die "postgres failed to start"
 step "Ensuring database and role exist"
+# Self-heal: if ./data/pg was initialised with another password (e.g. .env copied from another machine),
+# set the password from .env via the container's local socket (trust auth inside the official image).
+PGU="${POSTGRES_USER:-tw}"; PGP="${POSTGRES_PASSWORD:-tw_notification_change_me}"
+for i in $(seq 1 30); do docker compose exec -T "$DB" pg_isready -U "$PGU" -d postgres -q 2>/dev/null && break; sleep 1; done
+if ! docker compose exec -T -e PGPASSWORD="$PGP" "$DB" psql -h 127.0.0.1 -U "$PGU" -d postgres -qtAc "select 1" >/dev/null 2>&1; then
+  if docker compose exec -T "$DB" psql -U "$PGU" -d postgres -qtAc "alter role \"$PGU\" with login password '$PGP'" >/dev/null 2>&1; then
+    ok "password of role '$PGU' in ./data/pg synced with .env"
+  elif docker compose exec -T "$DB" psql -U postgres -d postgres -qtAc "do \$\$ begin if exists (select 1 from pg_roles where rolname='$PGU') then execute format('alter role %I with login superuser password %L','$PGU','$PGP'); else execute format('create role %I with login superuser password %L','$PGU','$PGP'); end if; end \$\$" >/dev/null 2>&1; then
+    ok "role '$PGU' created/updated in ./data/pg (volume was initialised with user 'postgres')"
+  else
+    warn "could not repair credentials automatically - if the data is disposable: ./install.sh reset-db"
+  fi
+fi
 # Runs every time: creates the DB/role if ./data/pg was initialised earlier with other settings.
 docker compose run --rm db-init || die "db-init failed - see the message above (usually credentials in .env do not match ./data/pg)"
 ok "database ready"
