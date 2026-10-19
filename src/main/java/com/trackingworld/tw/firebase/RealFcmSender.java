@@ -59,7 +59,9 @@ public class RealFcmSender implements FcmSender {
             if (response.isSuccessful()) {
                 out.add(FcmSendResult.ok(message.deliveryId(), response.getMessageId()));
             } else {
-                out.add(map(message.deliveryId(), response.getException()));
+                FcmSendResult failure = map(message.deliveryId(), response.getException());
+                log.warn("[FCM] delivery={} failed: {}", message.deliveryId(), failure.error());
+                out.add(failure);
             }
         }
         log.info("[FCM] sendEach size={} success={} failure={}", chunk.size(), batch.getSuccessCount(), batch.getFailureCount());
