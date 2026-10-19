@@ -1,0 +1,11 @@
+# Override: run the API container on the HOST network (like `network: host` for the build).
+# Use this on servers where containers on Docker's bridge network cannot reach the internet
+# (FCM fails with "Connection refused" while curl on the host works).
+# Enable by adding to .env:   COMPOSE_FILE=docker-compose.yml:docker-compose.host.yml
+# The app then listens directly on host port 8089 and reaches Postgres via 127.0.0.1:${POSTGRES_HOST_PORT}.
+services:
+  app:
+    network_mode: host
+    ports: []
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://127.0.0.1:${POSTGRES_HOST_PORT:-6033}/${POSTGRES_DB:-tw_notification}
