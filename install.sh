@@ -294,6 +294,12 @@ else
   step "Building image and starting '$CONTAINER' (+ postgres)"
 fi
 export DOCKERFILE=Dockerfile
+# Fast path: a jar that is newer than every source file (built on a dev machine with
+# ./gradlew bootJar, or scp'd here) is packaged as-is - seconds instead of minutes.
+if [[ -s build/libs/app.jar && -z "$(find src frontend/src build.gradle.kts -type f -newer build/libs/app.jar 2>/dev/null | head -1)" ]]; then
+  ok "build/libs/app.jar is up to date - skipping the in-Docker Gradle/npm build (delete the jar to force a full build)"
+  export DOCKERFILE=Dockerfile.prebuilt
+fi
 if ! docker compose build "$APP"; then
   warn "in-Docker build failed (usually: build container has no internet). Falling back to building the jar on this machine..."
   JAVA_OK=0
