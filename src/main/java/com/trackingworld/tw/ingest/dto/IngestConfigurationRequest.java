@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
 
-/** One S3 Configuration row: ID, PhoneNumber, UID, AlertType, DBDT, CrtBY. */
+/** One Configuration row from an Alert Source: ID, PhoneNumber, UID, AlertType, DBDT, CrtBY. */
 public record IngestConfigurationRequest(
         @JsonAlias({"ID", "sourceId"}) @Size(max = 200) String id,
         @JsonAlias({"PhoneNumber", "phone"}) @NotBlank @Size(max = 40) String phoneNumber,

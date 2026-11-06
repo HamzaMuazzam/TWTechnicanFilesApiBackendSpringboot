@@ -18,7 +18,7 @@ const EMPTY: ConfigurationInput = { phoneNumber: '', uid: '', alertType: '', crt
 
 /**
  * Who receives alerts: one row = (tracker uid, alert type or '*', phone number).
- * Normally pushed by S3 to POST /api/v1/ingest/configurations; this page lets you add/remove rows by hand.
+ * Normally pushed by an alert source to POST /api/v1/ingest/configurations; this page lets you add/remove rows by hand.
  */
 export function ConfigurationsPage() {
   const { isAdmin } = useAuth();
@@ -103,7 +103,7 @@ export function ConfigurationsPage() {
             <TextField label="Tracker UID" value={draft.uid} onChange={(e) => setDraft({ ...draft, uid: e.target.value })} autoFocus fullWidth required />
             <TextField label="Phone number" placeholder="03001234567" value={draft.phoneNumber} onChange={(e) => setDraft({ ...draft, phoneNumber: e.target.value })} fullWidth required />
             <TextField label="Alert type" placeholder="* (all)" value={draft.alertType} onChange={(e) => setDraft({ ...draft, alertType: e.target.value.toUpperCase() })} fullWidth />
-            <TextField label="S3 id (optional)" value={draft.id ?? ''} onChange={(e) => setDraft({ ...draft, id: e.target.value })} fullWidth helperText="If S3 later pushes the same id, it updates this row" />
+            <TextField label="Source id (optional)" value={draft.id ?? ''} onChange={(e) => setDraft({ ...draft, id: e.target.value })} fullWidth helperText="If the alert source later pushes the same id, it updates this row" />
           </Stack>
         </DialogContent>
         <DialogActions>

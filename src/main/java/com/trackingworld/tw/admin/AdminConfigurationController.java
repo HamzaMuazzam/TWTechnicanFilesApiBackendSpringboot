@@ -33,7 +33,7 @@ public class AdminConfigurationController {
     private final IngestService ingestService;
     private final ConfigurationRepository repository;
 
-    @Operation(summary = "Add (or upsert by S3 id) a configuration row")
+    @Operation(summary = "Add (or upsert by source id) a configuration row")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseWrapper<Rows.ConfigurationRow> create(@Valid @RequestBody IngestConfigurationRequest request) {

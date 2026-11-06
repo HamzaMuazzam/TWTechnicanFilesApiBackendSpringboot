@@ -2,7 +2,7 @@ import type { EntityConfig } from './types';
 
 export const sourcesEntity: EntityConfig = {
   name: 'sources',
-  title: 'Ingest sources',
+  title: 'Alert sources',
   singular: 'ingest source',
   path: '/sources',
   idField: 'id',

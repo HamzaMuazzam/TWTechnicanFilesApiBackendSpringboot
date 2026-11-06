@@ -18,7 +18,7 @@ export const SCHEMA: TableRef[] = [
   {
     name: 'alert',
     columns: ['id', 'source_id', 'source_alert_id', 'uid', 'alert_type_code', 'message', 'lat', 'lon', 'dbdt', 'sdt', 'extra', 'recipients_total', 'recipients_accepted', 'recipients_discarded'],
-    note: 'dbdt = S3 time, sdt = received by server; extra jsonb',
+    note: 'dbdt = alert source time, sdt = received by server; extra jsonb',
   },
   { name: 'notification', columns: ['id', 'alert_id', 'user_id', 'status', 'sent_at', 'delivered_at', 'read_at', 'created_at'], note: 'status: PENDING | SENT | DELIVERED | READ | FAILED | NO_DEVICE' },
   {

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Creates the default admin user and the "S3" ingest source on first start.
+ * Creates the default admin user and the default Alert Source ("S3") on first start.
  * Flyway seeds the static rows (alert types, settings); these two need hashed secrets from the environment.
  */
 @Slf4j

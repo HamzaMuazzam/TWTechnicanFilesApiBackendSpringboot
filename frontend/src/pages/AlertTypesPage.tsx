@@ -179,7 +179,7 @@ export function AlertTypesPage() {
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <PageHeader
         title="Alert types"
-        subtitle={isAdmin ? 'This catalogue builds itself: the first alert S3 sends with a new alertType code creates a row here (severity from the keyword rules in Settings). Edit label, severity, icon, colour and channel inline, then Save.' : 'Read-only — the VIEWER role cannot edit alert types. Rows are created automatically from the alertType codes S3 sends.'}
+        subtitle={isAdmin ? 'This catalogue builds itself: the first alert an alert source sends with a new alertType code creates a row here (severity from the keyword rules in Settings). Edit label, severity, icon, colour and channel inline, then Save.' : 'Read-only — the VIEWER role cannot edit alert types. Rows are created automatically from the alertType codes alert sources send.'}
         actions={
           <AdminOnly>
             <Button variant="contained" startIcon={<AddIcon />} onClick={() => setAddOpen(true)}>

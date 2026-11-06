@@ -106,7 +106,7 @@ export function SourcesPage() {
   const onRotate = async (s: SourceRow) => {
     const ok = await confirm({
       title: `Rotate key for “${s.name}”?`,
-      description: 'The current key stops working immediately. Any producer using it (e.g. S3) must be updated with the new key.',
+      description: 'The current key stops working immediately. Any alert source using it (e.g. S3) must be updated with the new key.',
       confirmLabel: 'Rotate key',
       danger: true,
     });
@@ -157,7 +157,7 @@ export function SourcesPage() {
         <DialogTitle>New ingest source</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ fontSize: 13, mb: 1 }}>
-            A source is a producer that pushes alerts (for example the S3 tracking server). Its API key is generated on creation.
+            An alert source is an external system that pushes configurations and alerts (for example the S3 tracking server). Its API key is generated on creation.
           </DialogContentText>
           <TextField
             autoFocus

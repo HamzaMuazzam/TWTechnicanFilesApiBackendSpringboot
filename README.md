@@ -1,6 +1,6 @@
 # TW Notification backend
 
-Spring Boot 3.5 / Java 17 service for TrackingWorld: receives alerts from the tracking server ("S3"),
+Spring Boot 3.5 / Java 17 service for TrackingWorld: receives alerts from Alert Sources (external systems such as the "S3" tracking server),
 stores them in PostgreSQL, pushes them to the customer Android app over FCM, tracks delivery per device
 and serves the admin dashboard. It also still hosts the legacy technician file-upload API on its original URLs.
 `SPEC.md` (repository root) is the contract for every path, field and enum.
@@ -8,7 +8,7 @@ and serves the admin dashboard. It also still hosts the legacy technician file-u
 ## Architecture
 
 ```
-S3 ──▶ /api/v1/ingest/configurations (uid+type → phones)  then  /api/v1/ingest/alerts ──▶ IngestService (tx per alert)
+Alert Source (S3) ──▶ /api/v1/ingest/configurations (uid+type → phones)  then  /api/v1/ingest/alerts ──▶ IngestService (tx per alert)
                                                │ alert + notification(PENDING) + delivery(QUEUED) / discarded_recipient
                                                ▼ after commit
                                            DispatchService (@Async) ──FCM data message──▶ Android app
@@ -42,7 +42,7 @@ Schema is managed by Flyway (`src/main/resources/db/migration/V1__init.sql`, `V2
 | `FIREBASE_CREDENTIALS_PATH` | `./config/firebase-service-account.json` | service-account JSON |
 | `AUTH_DEV_LOGIN_ENABLED` | `false` | enables `POST /api/v1/app/auth/dev-login` (never in production) |
 | `ADMIN_INITIAL_PASSWORD` | `ChangeMe123!` | password of the seeded `admin` user (WARN logged when default) |
-| `INGEST_INITIAL_API_KEY` | generated | API key of the seeded `S3` source (generated key is logged once) |
+| `INGEST_INITIAL_API_KEY` | generated | API key of the seeded `S3` alert source (generated key is logged once) |
 | `APP_TIMEZONE` | `Asia/Karachi` | retention cron + per-day aggregation |
 | `CORS_ALLOWED_ORIGINS` | `*` | comma-separated origin patterns for the dashboard |
 | `SERVER_PORT` | `8089` | |
@@ -89,7 +89,7 @@ project for phone auth; the backend verifies the ID token and reads its `phone_n
 ## Ingest example
 
 ```bash
-# 1) who receives what (upsert by S3 ID; AlertType "*" = all types)
+# 1) who receives what (upsert by source ID; AlertType "*" = all types)
 curl -X POST http://localhost:8089/api/v1/ingest/configurations -H "Content-Type: application/json" \
   -d '[{"ID":"C-1","PhoneNumber":"03001234567","UID":"111","AlertType":"*","CrtBY":"s3"}]'
 # 2) the alert - recipients are looked up from the configurations
@@ -104,7 +104,7 @@ Unknown `alertType` codes are created automatically as INFO. More requests: `doc
 ## Default credentials
 
 * Dashboard: `admin` / `ADMIN_INITIAL_PASSWORD` (default `ChangeMe123!`) – change it from *Admins* after first login.
-* Ingest source `S3`: `INGEST_INITIAL_API_KEY`, or the key printed once in the startup log; rotate from *Ingest sources*.
+* Alert source `S3`: `INGEST_INITIAL_API_KEY`, or the key printed once in the startup log; rotate from *Alert sources*.
 
 Login endpoints are rate limited to 20 requests/minute per IP (`429 RATE_LIMITED`).
 

@@ -14,7 +14,7 @@ import lombok.Setter;
 
 import java.time.Instant;
 
-/** S3 Configuration row: phone number that receives alerts of a tracker (uid). alert_type '*' = all types. */
+/** Configuration row pushed by an Alert Source: phone number that receives alerts of a tracker (uid). alert_type '*' = all types. */
 @Entity
 @Table(name = "configuration")
 @Getter

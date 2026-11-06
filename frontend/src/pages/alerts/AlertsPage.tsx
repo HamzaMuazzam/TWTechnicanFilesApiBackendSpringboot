@@ -80,7 +80,7 @@ export function AlertsPage() {
         <DialogTitle>Send alert</DialogTitle>
         <DialogContent>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Goes through the same pipeline as S3: recipients are looked up from the configurations for this UID and alert type, then pushed to their phones.
+            Goes through the same pipeline as an alert source: recipients are looked up from the configurations for this UID and alert type, then pushed to their phones.
           </Typography>
           <Stack spacing={2}>
             <TextField label="Tracker UID" value={draft.uid} onChange={(e) => setDraft({ ...draft, uid: e.target.value })} autoFocus fullWidth required />

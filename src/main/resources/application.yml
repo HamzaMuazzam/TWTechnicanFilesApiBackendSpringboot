@@ -70,7 +70,7 @@ springdoc:
     path: /technician/index.html
     doc-expansion: none
     # Open on the group external systems need (POST /api/v1/ingest/alerts); other groups via "Select a definition".
-    urls-primary-name: "1 - ingest (S3 → us)"
+    urls-primary-name: "1 - Alert Source → TW Notification"
     tags-sorter: alpha
     operations-sorter: alpha
 

@@ -31,7 +31,7 @@ public class SwaggerConfig {
                 .info(new Info().title("TrackingWorld Notification API")
                         .description("""
                                 TrackingWorld Notification backend: legacy technician file uploads, \
-                                S3 alert ingestion, the customer Android app API and the admin dashboard API.""")
+                                alert ingestion from Alert Sources (e.g. the S3 tracking server), the customer Android app API and the admin dashboard API.""")
                         .version("1.0").contact(new Contact().name("Hamza Muazzam")
                                 .email("hamzamuazzam@gmail.com")));
     }
@@ -43,7 +43,7 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi ingestApi() {
-        return GroupedOpenApi.builder().group("1 - ingest (S3 → us)").pathsToMatch(ApiPaths.INGEST + "/**").build();
+        return GroupedOpenApi.builder().group("1 - Alert Source → TW Notification").pathsToMatch(ApiPaths.INGEST + "/**").build();
     }
 
     @Bean

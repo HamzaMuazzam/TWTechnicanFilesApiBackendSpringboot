@@ -150,7 +150,7 @@ public class IngestService {
         return new IngestResultDto(item.id(), alert.getId(), result, phones.size(), notified, discards.size(), discardedDtos);
     }
 
-    /** Upsert one S3 Configuration row (keyed by S3's ID when given). Returns the stored row. */
+    /** Upsert one Configuration row from an Alert Source (keyed by the source's ID when given). Returns the stored row. */
     public Configuration saveConfiguration(IngestConfigurationRequest req) {
         String e164 = PhoneNormalizer.normalize(req.phoneNumber())
                 .orElseThrow(() -> new BadRequestException(ErrorCodes.INVALID_PHONE));
@@ -198,7 +198,7 @@ public class IngestService {
     }
 
     /**
-     * Alert types are discovered dynamically: the first time S3 sends a code we have not seen, a catalogue row is
+     * Alert types are discovered dynamically: the first time an Alert Source sends a code we have not seen, a catalogue row is
      * created with sensible defaults (severity from the keyword settings, matching channel/colour, humanised label).
      * Admins refine it in the dashboard; later alerts with the same code reuse the row.
      */

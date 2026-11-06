@@ -233,7 +233,7 @@ export function AlertDrawer({ alertId, onClose }: { alertId: number | null; onCl
           <Box sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: 3, p: 2 }}>
             <MetaGrid
               items={[
-                { label: 'Device time (S3)', hint: 'dbdt — timestamp sent by the tracking server', value: <TimeText value={a.dbdt} /> },
+                { label: 'Source time', hint: 'dbdt — timestamp sent by the alert source', value: <TimeText value={a.dbdt} /> },
                 { label: 'Received by server', hint: 'sdt — when this backend accepted the alert', value: <TimeText value={a.sdt} /> },
                 { label: 'Severity', value: a.severity ? <StatusChip value={a.severity} /> : '—' },
                 { label: 'Source', value: a.sourceName ?? (a.sourceId ? `#${a.sourceId}` : '—') },

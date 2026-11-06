@@ -23,7 +23,7 @@ import java.time.Instant;
 import java.util.List;
 
 /**
- * Lets the dashboard post an alert exactly the way S3 will (same IngestService, same configuration lookup),
+ * Lets the dashboard post an alert exactly the way an Alert Source will (same IngestService, same configuration lookup),
  * so the whole pipeline can be tested before the external APIs are handed over.
  */
 @Slf4j

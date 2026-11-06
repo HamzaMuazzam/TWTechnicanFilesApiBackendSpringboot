@@ -2,7 +2,7 @@
 @host = http://localhost:8089
 # No API key needed while AUTH_ENABLED=false.
 
-### 1) Push configurations (who receives what). Upserts by S3's ID. AlertType "*" or omitted = all types.
+### 1) Push configurations (who receives what). Upserts by the source's ID. AlertType "*" or omitted = all types.
 POST {{host}}/api/v1/ingest/configurations
 Content-Type: application/json
 
@@ -14,7 +14,7 @@ Content-Type: application/json
 ### List configurations for a uid
 GET {{host}}/api/v1/ingest/configurations?uid=111
 
-### Delete a configuration (S3 id or our numeric id)
+### Delete a configuration (source id or our numeric id)
 DELETE {{host}}/api/v1/ingest/configurations/C-2
 
 ### 2) Push alerts. Recipients come from the configurations (uid + alert type).

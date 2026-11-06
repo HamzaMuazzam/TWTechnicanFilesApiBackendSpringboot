@@ -32,7 +32,7 @@ const FIELDS: Array<{ key: keyof Settings; label: string; help: string; unit?: s
   { key: 'retention_days', label: 'Retention', help: 'Alerts older than this are deleted nightly at 03:00 Asia/Karachi (cascades to notifications, deliveries and discards).', unit: 'days', kind: 'number' },
   { key: 'max_devices_per_user', label: 'Max devices per user', help: 'When a user signs in on more devices than this, the oldest device is deactivated.', unit: 'devices', kind: 'number' },
   { key: 'dispatch_max_attempts', label: 'Dispatch max attempts', help: 'FCM sends are retried with exponential back-off (30 s × 2ⁿ) up to this many attempts before a delivery is marked FAILED.', unit: 'attempts', kind: 'number' },
-  { key: 'severity_keywords_critical', label: 'Critical keywords', help: 'Alert types are discovered automatically the first time S3 sends a new alertType code. A new code containing any of these keywords (comma-separated, case-insensitive) starts as CRITICAL.', kind: 'keywords' },
+  { key: 'severity_keywords_critical', label: 'Critical keywords', help: 'Alert types are discovered automatically the first time an alert source sends a new alertType code. A new code containing any of these keywords (comma-separated, case-insensitive) starts as CRITICAL.', kind: 'keywords' },
   { key: 'severity_keywords_warning', label: 'Warning keywords', help: 'A new code containing any of these starts as WARNING; everything else starts as INFO. You can always change a type afterwards on the Alert types page.', kind: 'keywords' },
 ];
 

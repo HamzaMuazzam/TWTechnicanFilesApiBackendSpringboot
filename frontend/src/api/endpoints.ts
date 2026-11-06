@@ -69,7 +69,7 @@ export interface SendAlertResult {
 }
 export const alertsApi = {
   detail: (id: number) => get<AlertDetail>(`/alerts/${id}`),
-  /** Posts through the same ingest pipeline S3 uses (recipients come from the configurations). */
+  /** Posts through the same ingest pipeline Alert Sources use (recipients come from the configurations). */
   send: (body: SendAlertInput) => post<SendAlertResult>('/alerts/send', body),
   resend: (notificationId: number) => post<unknown>(`/notifications/${notificationId}/resend`),
 };

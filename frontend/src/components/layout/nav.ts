@@ -48,7 +48,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Configuration',
     items: [
-      { label: 'Ingest sources', path: '/sources', icon: KeyOutlinedIcon },
+      { label: 'Alert sources', path: '/sources', icon: KeyOutlinedIcon },
       { label: 'Alert types', path: '/alert-types', icon: CategoryOutlinedIcon },
       { label: 'Admins', path: '/admins', icon: AdminPanelSettingsOutlinedIcon, adminOnly: true },
       { label: 'SQL console', path: '/sql', icon: TerminalOutlinedIcon, adminOnly: true },

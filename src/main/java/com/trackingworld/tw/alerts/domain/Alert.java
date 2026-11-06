@@ -58,7 +58,7 @@ public class Alert {
 
     private Double lon;
 
-    /** S3's own timestamp, stored as sent. */
+    /** The Alert Source's own timestamp, stored as sent. */
     private Instant dbdt;
 
     /** When OUR server received it. */

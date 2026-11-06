@@ -13,7 +13,7 @@ export const alertsEntity: EntityConfig = {
   fields: [
     { field: 'id', label: 'ID', type: 'number', width: 90, render: 'mono' },
     { field: 'sdt', label: 'Received by server', type: 'datetime', width: 170, render: 'time', hint: 'SDT — when our server received the alert' },
-    { field: 'dbdt', label: 'Device time (S3)', type: 'datetime', width: 170, render: 'time', hint: 'DBDT — timestamp sent by S3' },
+    { field: 'dbdt', label: 'Source time', type: 'datetime', width: 170, render: 'time', hint: 'DBDT — timestamp sent by the alert source' },
     { field: 'uid', label: 'UID', type: 'text', width: 120, render: 'mono' },
     { field: 'alertTypeCode', label: 'Type', type: 'enum', enumSource: 'alertTypes', width: 150, render: 'chip' },
     { field: 'severity', filterField: 'alertType.severity', label: 'Severity', type: 'enum', options: SEVERITIES, width: 110, render: 'chip' },

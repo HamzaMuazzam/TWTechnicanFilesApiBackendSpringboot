@@ -53,7 +53,7 @@ import java.util.Set;
 @RestController
 @RequestMapping(ApiPaths.INGEST)
 @RequiredArgsConstructor
-@Tag(name = "Ingest", description = "S3 -> TW Notification: configurations and alerts")
+@Tag(name = "Ingest", description = "Alert Source -> TW Notification: configurations and alerts")
 @SecurityRequirement(name = SwaggerConfig.API_KEY)
 public class IngestController {
 
@@ -64,7 +64,7 @@ public class IngestController {
     private final Validator validator;
     private final ConfigurationRepository configurationRepository;
 
-    @Operation(summary = "Push configurations: one object or an array (max 500). Upserts by S3's ID.",
+    @Operation(summary = "Push configurations: one object or an array (max 500). Upserts by the source's ID.",
             description = "Fields: ID, PhoneNumber, UID, AlertType (omit or '*' = all types), DBDT, CrtBY.")
     @PostMapping("/configurations")
     public ResponseEntity<ResponseWrapper<List<ConfigurationDto>>> configurations(
@@ -94,7 +94,7 @@ public class IngestController {
         return ResponseWrapper.success(rows.stream().map(ConfigurationDto::of).toList());
     }
 
-    @Operation(summary = "Delete a configuration by S3's ID (or our numeric id)")
+    @Operation(summary = "Delete a configuration by the source's ID (or our numeric id)")
     @DeleteMapping("/configurations/{id}")
     public ResponseWrapper<Boolean> deleteConfiguration(@PathVariable String id) {
         Configuration cfg = configurationRepository.findBySourceId(id)
@@ -133,7 +133,7 @@ public class IngestController {
         Map<String, String> missingIds = new LinkedHashMap<>();
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).id() == null || items.get(i).id().isBlank()) {
-                missingIds.put("[" + i + "].id", "must not be blank (S3 alert ID, used to de-duplicate)");
+                missingIds.put("[" + i + "].id", "must not be blank (the source's alert ID, used to de-duplicate)");
             }
         }
         if (!missingIds.isEmpty()) {
